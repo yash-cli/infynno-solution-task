@@ -9,7 +9,7 @@
 
         <!-- Horizontal Scroll Wrapper -->
         <div class="overflow-x-auto">
-            <div class="flex gap-4 min-w-max">
+            <div class="flex gap-4 min-w-max" wire:sortable-group="updateLeadOrder">
                 @foreach (['lead', 'contacted', 'proposal_sent', 'won'] as $status)
                     <div class="w-80 flex-shrink-0">
                         <div class="bg-gray-100 rounded-lg shadow-sm h-[75vh] flex flex-col">
@@ -22,10 +22,43 @@
                             </div>
 
                             <!-- Cards -->
-                            <div class="flex-1 overflow-y-auto p-3 space-y-3">
+                            <div class="flex-1 overflow-y-auto p-3 space-y-3"
+                                wire:sortable-group.item-group="{{ $status }}">
                                 @forelse ($leads[$status] ?? [] as $lead)
-                                    <div wire:key="lead-{{ $lead['id'] }}"
-                                        class="relative bg-white rounded-md p-3 shadow-sm hover:shadow-md transition group cursor-pointer">
+                                    <div wire:key="lead-{{ $lead['id'] }}" x-data="{ open: false, highlight: @js(in_array($lead['id'], $recentlyMoved ?? [])) }"
+                                        x-init="if (highlight) setTimeout(() => highlight = false, 10000)" wire:sortable-group.item="{{ $lead['id'] }}"
+                                        :class="highlight ? 'ring-2 ring-blue-400 bg-blue-50' : ''"
+                                        class="relative bg-white rounded-md p-3 shadow-sm hover:shadow-md transition group">
+
+                                        <!-- Drag Handle -->
+                                        <div wire:sortable-group.handle
+                                            class="absolute top-3 left-2 cursor-move text-gray-400 hover:text-gray-600 z-10 px-1">
+                                            ⠿
+                                        </div>
+
+                                        <div class="pl-6 pr-6">
+                                            <p class="text-sm font-medium text-gray-800">
+                                                {{ $lead['title'] }}
+                                            </p>
+                                        </div>
+
+                                        <div x-show="open" style="display: none;" class="mt-2 space-y-1 pl-6">
+                                            <p class="text-xs text-gray-500">
+                                                <span class="font-semibold">Email:</span>
+                                                {{ $lead['email'] ?? 'No email' }}
+                                            </p>
+                                            <p class="text-xs text-gray-500">
+                                                <span class="font-semibold">Phone:</span>
+                                                {{ $lead['phone'] ?? 'No phone' }}
+                                            </p>
+                                        </div>
+
+                                        <button x-on:click="open = !open" type="button"
+                                            class="text-xs text-blue-600 mt-2 hover:underline focus:outline-none pl-6">
+                                            <span x-show="!open">Show details</span>
+                                            <span x-show="open" style="display: none;">Hide details</span>
+                                        </button>
+
                                         <button wire:click="edit({{ $lead['id'] }})"
                                             class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                             title="Edit">
@@ -37,14 +70,6 @@
                                             title="Delete">
                                             🗑️
                                         </button>
-
-
-                                        <p class="text-sm font-medium text-gray-800">
-                                            {{ $lead['title'] }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 mt-1">
-                                            {{ $lead['email'] ?? 'No email' }}
-                                        </p>
                                     </div>
                                 @empty
                                     <p class="text-xs text-gray-400 text-center mt-4">
@@ -121,4 +146,8 @@
                 </div>
             </div>
         @endif
+
+        <!-- Lead Details -->
+
+
     </div>

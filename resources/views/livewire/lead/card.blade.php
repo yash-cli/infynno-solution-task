@@ -27,6 +27,10 @@
             <span class="font-semibold">Author:</span>
             {{ $lead['user']['name'] ?? 'Unknown' }}
         </p>
+        <p class="text-xs text-gray-500">
+            <span class="font-semibold">Created At:</span>
+            {{ Carbon\Carbon::parse($lead['created_at'])->format('d M, Y h:i A') ?? 'Unknown' }}
+        </p>
     </div>
 
     <button x-on:click="open = !open" type="button"
@@ -36,11 +40,12 @@
     </button>
 
     @if ($lead['user_id'] == Auth::id())
-        <button wire:click="edit({{ $lead['id'] }})"
+        <button wire:click="edit('{{ $lead['id'] }}')"
             class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100" title="Edit">
             ✏️
         </button>
-        <button wire:click.stop="delete({{ $lead['id'] }})" wire:confirm="Are you sure you want to delete this lead?"
+        <button wire:click.stop="delete('{{ $lead['id'] }}')"
+            wire:confirm="Are you sure you want to delete this lead?"
             class="absolute top-8 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100" title="Delete">
             🗑️
         </button>

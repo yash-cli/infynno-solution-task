@@ -1,3 +1,4 @@
+    @section('title', 'Lead Dashboard')
     <div class="container mx-auto px-4 py-6">
         <!-- Add Lead Button -->
         <div class="flex justify-end mb-4">

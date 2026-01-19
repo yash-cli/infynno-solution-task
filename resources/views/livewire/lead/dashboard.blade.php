@@ -22,10 +22,16 @@
                             </div>
 
                             <!-- Cards -->
-                            <div class="flex-1 overflow-y-auto p-3 space-y-3">
+                            <div class="flex-1 overflow-y-auto p-3 space-y-3" wire:sortable-group="updateLeadOrder"
+                                wire:sortable-group.item-group="{{ $status }}">
                                 @forelse ($leads[$status] ?? [] as $lead)
                                     <div wire:key="lead-{{ $lead['id'] }}"
+                                        wire:sortable-group.item="{{ $lead['id'] }}"
                                         class="relative bg-white rounded-md p-3 shadow-sm hover:shadow-md transition group cursor-pointer">
+                                        <div wire:sortable-group.handle
+                                            class="absolute bottom-2 left-2 text-gray-400 cursor-move text-xs">
+                                            ⠿
+                                        </div>
                                         <button wire:click="edit({{ $lead['id'] }})"
                                             class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                             title="Edit">

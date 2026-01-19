@@ -93,10 +93,26 @@ class Dashboard extends Component
 
     public function loadLeads()
     {
-        $this->leads = Lead::orderBy('id')
+        $this->leads = Lead::where('user_id', Auth::id())
+            ->orderBy('id')
             ->get()
             ->groupBy('status')
             ->toArray();
+    }
+
+    public function updateLeadOrder($groups)
+    {
+        foreach ($groups as $status => $items) {
+            foreach ($items as $item) {
+                Lead::where('id', $item['value'])
+                    ->where('user_id', Auth::id())
+                    ->update([
+                        'status' => $status,
+                    ]);
+            }
+        }
+
+        $this->loadLeads();
     }
 
     public function render()

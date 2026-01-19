@@ -102,7 +102,10 @@ class Dashboard extends Component
 
     public function updateLeadOrder($groups)
     {
-        foreach ($groups as $status => $items) {
+        foreach ($groups as $group) {
+            $status = $group['value'];
+            $items = $group['items'] ?? [];
+
             foreach ($items as $item) {
                 Lead::where('id', $item['value'])
                     ->where('user_id', Auth::id())

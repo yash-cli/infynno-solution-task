@@ -9,7 +9,7 @@
 
         <!-- Horizontal Scroll Wrapper -->
         <div class="overflow-x-auto">
-            <div class="flex gap-4 min-w-max">
+            <div class="flex gap-4 min-w-max" wire:sortable-group="updateLeadOrder">
                 @foreach (['lead', 'contacted', 'proposal_sent', 'won'] as $status)
                     <div class="w-80 flex-shrink-0">
                         <div class="bg-gray-100 rounded-lg shadow-sm h-[75vh] flex flex-col">
@@ -22,16 +22,17 @@
                             </div>
 
                             <!-- Cards -->
-                            <div class="flex-1 overflow-y-auto p-3 space-y-3" wire:sortable-group="updateLeadOrder"
+                            <div class="flex-1 overflow-y-auto p-3 space-y-3"
                                 wire:sortable-group.item-group="{{ $status }}">
                                 @forelse ($leads[$status] ?? [] as $lead)
-                                    <div wire:key="lead-{{ $lead['id'] }}"
+                                    <div wire:key="lead-{{ $lead['id'] }}" x-data="{ open: false }"
                                         wire:sortable-group.item="{{ $lead['id'] }}"
-                                        class="relative bg-white rounded-md p-3 shadow-sm hover:shadow-md transition group cursor-pointer">
-                                        <div wire:sortable-group.handle
-                                            class="absolute bottom-2 left-2 text-gray-400 cursor-move text-xs">
-                                            ⠿
-                                        </div>
+                                        class="relative bg-white rounded-md p-3 shadow-sm hover:shadow-md transition group">
+                                        <button @click.stop="open = !open" class="text-xs text-blue-600 mt-2">
+                                            <span x-show="!open">Show details</span>
+                                            <span x-show="open">Hide details</span>
+                                        </button>
+
                                         <button wire:click="edit({{ $lead['id'] }})"
                                             class="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                             title="Edit">
@@ -127,4 +128,8 @@
                 </div>
             </div>
         @endif
+
+        <!-- Lead Details -->
+
+
     </div>

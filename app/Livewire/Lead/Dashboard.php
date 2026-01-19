@@ -16,6 +16,8 @@ class Dashboard extends Component
     #[Locked]
     public ?int $editingId = null;
 
+    public array $recentlyMoved = [];
+
     public array $form = [
         'title' => '',
         'email' => '',
@@ -102,6 +104,8 @@ class Dashboard extends Component
 
     public function updateLeadOrder($groups)
     {
+        $this->recentlyMoved = [];
+
         foreach ($groups as $group) {
             $status = $group['value'];
             $items = $group['items'] ?? [];
@@ -112,6 +116,8 @@ class Dashboard extends Component
                     ->update([
                         'status' => $status,
                     ]);
+
+                $this->recentlyMoved[] = $item['value'];
             }
         }
 

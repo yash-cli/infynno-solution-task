@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Lead;
 
+use App\Enums\LeadStatus as LeadStatusEnum;
 use App\Models\Lead;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -35,10 +37,17 @@ class Dashboard extends Component
         $this->loadLeads();
     }
 
+    #[Computed]
+    public function leadStatuses(): array
+    {
+        return LeadStatusEnum::values();
+    }
+
     public function create()
     {
         $this->reset('form');
         $this->resetValidation();
+        $this->editingId = null;
         $this->showModal = true;
     }
 
@@ -75,7 +84,7 @@ class Dashboard extends Component
                 'title' => $this->form['title'],
                 'email' => $this->form['email'],
                 'phone' => $this->form['phone'],
-                'status' => 'lead',
+                'status' => LeadStatusEnum::LEAD,
             ]);
         }
 
@@ -95,8 +104,7 @@ class Dashboard extends Component
 
     public function loadLeads()
     {
-        $this->leads = Lead::where('user_id', Auth::id())
-            ->orderBy('id')
+        $this->leads = Lead::with('user')->orderBy('id', 'DESC')
             ->get()
             ->groupBy('status')
             ->toArray();
@@ -112,7 +120,6 @@ class Dashboard extends Component
 
             foreach ($items as $item) {
                 Lead::where('id', $item['value'])
-                    ->where('user_id', Auth::id())
                     ->update([
                         'status' => $status,
                     ]);

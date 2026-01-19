@@ -16,7 +16,7 @@ class Dashboard extends Component
     public bool $showModal = false;
 
     #[Locked]
-    public ?int $editingId = null;
+    public mixed $editingId = null;
 
     public array $recentlyMoved = [];
 
@@ -26,10 +26,17 @@ class Dashboard extends Component
         'phone' => '',
     ];
 
-    protected $rules = [
-        'form.title' => 'required|string|max:255',
-        'form.email' => 'required|email',
-        'form.phone' => 'required|string|max:20',
+    protected $messages = [
+        'form.title.required' => 'Title is required.',
+        'form.title.max' => 'Title must not exceed 255 characters.',
+
+        'form.email.required' => 'Email is required.',
+        'form.email.email' => 'Please enter a valid email address.',
+        'form.email.max' => 'Email must not exceed 255 characters.',
+
+        'form.phone.required' => 'Phone number is required.',
+        'form.phone.min' => 'Phone number must be at least 8 digits.',
+        'form.phone.max' => 'Phone number must not exceed 20 digits.',
     ];
 
     public function mount()
@@ -51,7 +58,7 @@ class Dashboard extends Component
         $this->showModal = true;
     }
 
-    public function edit(int $id)
+    public function edit(int|string $id)
     {
         $lead = Lead::where('user_id', Auth::id())->findOrFail($id);
 
@@ -93,7 +100,7 @@ class Dashboard extends Component
         $this->loadLeads();
     }
 
-    public function delete(int $id)
+    public function delete(int|string $id)
     {
         Lead::where('id', $id)
             ->where('user_id', Auth::id())
@@ -134,5 +141,33 @@ class Dashboard extends Component
     public function render()
     {
         return view('livewire.lead.dashboard')->layout('layouts.app');
+    }
+
+    /**
+     * Class's protected methods.
+     */
+    protected function rules()
+    {
+        return [
+            'form.title' => 'required|string|max:255',
+            'form.email' => 'required|email|max:255',
+            'form.phone' => 'required|string|min:8|max:20',
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'form.title.required' => 'Title is required.',
+            'form.title.max' => 'Title must not exceed 255 characters.',
+
+            'form.email.required' => 'Email is required.',
+            'form.email.email' => 'Please enter a valid email address.',
+            'form.email.max' => 'Email must not exceed 255 characters.',
+
+            'form.phone.required' => 'Phone number is required.',
+            'form.phone.min' => 'Phone number must be at least 8 digits.',
+            'form.phone.max' => 'Phone number must not exceed 20 digits.',
+        ];
     }
 }
